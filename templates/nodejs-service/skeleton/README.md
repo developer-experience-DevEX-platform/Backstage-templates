@@ -2,6 +2,8 @@
 
 ${{ values.description }}
 
-## Ownership
+Owner: ${{ values.owner }}
 
-${{ values.owner }}
+Install: `npm install`
+
+Run in development: `npm run dev`

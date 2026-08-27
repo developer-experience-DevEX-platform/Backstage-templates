@@ -7,6 +7,8 @@ metadata:
 spec:
   owner: platform-engineering
   type: service
+  EXPERIMENTAL_recovery:
+    EXPERIMENTAL_strategy: startOver
   parameters:
     - title: Service Information
       required:

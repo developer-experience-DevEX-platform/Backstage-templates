@@ -20,7 +20,7 @@ RUN npm install --omit=dev
 
 COPY --from=build /app/dist ./dist
 
-USER node
+USER 1000
 
 EXPOSE 3000
 

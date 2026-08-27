@@ -29,4 +29,7 @@ jobs:
       has_integration_tests: false
       has_gitops_deploy: false
       has_smoke_test: false
-    secrets: inherit
+    secrets:
+      azure_client_id_cd: ${{ vars.AZURE_CLIENT_ID_CD }}
+      azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+      azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}

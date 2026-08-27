@@ -78,6 +78,12 @@ spec:
       input:
         repoContentsUrl: ${{ steps.publishRepository.output.repoContentsUrl }}
         catalogInfoPath: /catalog-info.yaml
+    - id: cleanupRepository
+      name: Roll back repository
+      if: ${{ failure() }}
+      action: devex:github:repo:delete
+      input:
+        repoUrl: github.com?owner=developer-experience-DevEX-platform&repo=${{ parameters.name }}
   output:
     links:
       - title: Repository

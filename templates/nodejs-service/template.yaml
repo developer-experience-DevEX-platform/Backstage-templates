@@ -40,19 +40,6 @@ spec:
                 - Group
                 - User
             allowArbitraryValues: false
-    - title: Repository
-      required:
-        - repoUrl
-      properties:
-        repoUrl:
-          title: Repository Location
-          type: string
-          ui:field: RepoUrlPicker
-          ui:options:
-            allowedHosts:
-              - github.com
-            allowedOwners:
-              - developer-experience-DevEX-platform
   steps:
     - id: fetchBase
       name: Generate Node.js Service
@@ -69,7 +56,7 @@ spec:
       name: Publish Repository
       action: publish:github
       input:
-        repoUrl: ${{ parameters.repoUrl }}
+        repoUrl: github.com?owner=developer-experience-DevEX-platform&repo=${{ parameters.name }}
         description: ${{ parameters.description }}
         defaultBranch: main
         repoVisibility: public

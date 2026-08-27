@@ -73,6 +73,16 @@ spec:
         description: ${{ parameters.description }}
         defaultBranch: main
         repoVisibility: public
+    - id: provisionServiceIdentity
+      name: Request CI identity
+      action: github:actions:dispatch
+      input:
+        repoUrl: github.com?owner=developer-experience-DevEX-platform&repo=platform-infrastructure
+        workflowId: bootstrap-service-identity.yml
+        branchOrTagName: main
+        workflowInputs:
+          service_name: ${{ parameters.name }}
+          github_repository: ${{ parameters.name }}
     - id: registerComponent
       name: Register Component
       action: catalog:register

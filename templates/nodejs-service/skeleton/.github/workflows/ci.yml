@@ -15,8 +15,8 @@ jobs:
     with:
       service_name: ${{ github.event.repository.name }}
       working_directory: .
-      image_repository: <ACR_NAME>.azurecr.io/${{ github.event.repository.name }}
-      container_registry_name: <ACR_NAME>
+      image_repository: devexplatformacr.azurecr.io/${{ github.event.repository.name }}
+      container_registry_name: devexplatformacr
       dockerfile_path: ./Dockerfile
       build_container_image: node:24-bookworm-slim
       install_command: npm ci

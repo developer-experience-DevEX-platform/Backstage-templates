@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  ci:
+    permissions:
+      id-token: write
+      contents: read
+    uses: teejayade2244/Cloud-Infrastructure-Monitoring-Alerting-Platform/.github/workflows/service-ci-template.yml@main
+    with:
+      service_name: ${{ github.event.repository.name }}
+      working_directory: .
+      image_repository: <ACR_NAME>.azurecr.io/${{ github.event.repository.name }}
+      container_registry_name: <ACR_NAME>
+      dockerfile_path: ./Dockerfile
+      build_container_image: node:24-bookworm-slim
+      install_command: npm ci
+      lint_command: npm run lint && npm run format:check
+      test_command: npm test -- --coverage
+      unit_test_working_directory: .
+      coverage_report_path: coverage
+      codeql_language: javascript
+      codeql_paths_ignore: '["node_modules", "dist", "coverage"]'
+      has_integration_tests: false
+      has_gitops_deploy: false
+      has_smoke_test: false
+    secrets: inherit

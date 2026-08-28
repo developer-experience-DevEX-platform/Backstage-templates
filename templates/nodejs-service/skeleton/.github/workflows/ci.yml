@@ -7,6 +7,8 @@ jobs:
   ci:
     permissions:
       contents: read
+      security-events: write
+      id-token: write
     uses: teejayade2244/Cloud-Infrastructure-Monitoring-Alerting-Platform/.github/workflows/service-ci-template.yml@main
     with:
       service_name: ${{ github.event.repository.name }}

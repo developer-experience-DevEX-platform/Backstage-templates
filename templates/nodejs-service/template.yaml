@@ -102,7 +102,6 @@ spec:
         targetPath: .platform-gitops/environments/staging/${{ parameters.name }}
         values:
           name: ${{ parameters.name }}
-          imageTag: ${{ steps.publishRepository.output.commitHash }}
     - id: fetchProductionGitOpsDefinition
       name: Prepare Production GitOps Configuration
       action: fetch:template
@@ -111,7 +110,6 @@ spec:
         targetPath: .platform-gitops/environments/production/${{ parameters.name }}
         values:
           name: ${{ parameters.name }}
-          imageTag: ${{ steps.publishRepository.output.commitHash }}
     - id: createGitOpsPullRequest
       name: Create GitOps Pull Request
       action: publish:github:pull-request

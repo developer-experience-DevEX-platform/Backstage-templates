@@ -15,6 +15,7 @@ spec:
         - name
         - description
         - owner
+        - deploymentTarget
       properties:
         name:
           title: Service Name
@@ -42,6 +43,15 @@ spec:
                 - Group
                 - User
             allowArbitraryValues: false
+        deploymentTarget:
+          title: Deployment Target
+          type: string
+          description: The platform runtime target for this service.
+          default: kubernetes
+          enum:
+            - kubernetes
+          enumNames:
+            - Kubernetes
   steps:
     - id: fetchBase
       name: Generate Node.js Service
@@ -62,16 +72,59 @@ spec:
         description: ${{ parameters.description }}
         defaultBranch: main
         repoVisibility: public
-    - id: provisionServiceIdentity
-      name: Request CI identity
-      action: github:actions:dispatch
+    - id: fetchInfrastructureDefinition
+      name: Prepare Container Release Infrastructure
+      action: fetch:template
+      input:
+        url: ./platform-infrastructure
+        targetPath: .platform-infrastructure
+        values:
+          name: ${{ parameters.name }}
+    - id: createInfrastructurePullRequest
+      name: Create Infrastructure Pull Request
+      action: publish:github:pull-request
       input:
         repoUrl: github.com?owner=developer-experience-DevEX-platform&repo=platform-infrastructure
-        workflowId: bootstrap-service-identity.yml
-        branchOrTagName: main
-        workflowInputs:
-          service_name: ${{ parameters.name }}
-          github_repository: ${{ parameters.name }}
+        branchName: backstage/${{ parameters.name }}-container-release
+        targetBranchName: main
+        title: 'feat: provision container release for ${{ parameters.name }}'
+        description: 'Provision the ECR repository, GitHub OIDC release identity, and repository configuration for ${{ parameters.name }}.'
+        commitMessage: 'feat: provision container release for ${{ parameters.name }}'
+        sourcePath: .platform-infrastructure
+        targetPath: services/${{ parameters.name }}
+        createWhenEmpty: false
+        update: true
+    - id: fetchStagingGitOpsDefinition
+      name: Prepare Staging GitOps Configuration
+      action: fetch:template
+      input:
+        url: ./gitops/staging
+        targetPath: .platform-gitops/environments/staging/${{ parameters.name }}
+        values:
+          name: ${{ parameters.name }}
+          imageTag: ${{ steps.publishRepository.output.commitHash }}
+    - id: fetchProductionGitOpsDefinition
+      name: Prepare Production GitOps Configuration
+      action: fetch:template
+      input:
+        url: ./gitops/production
+        targetPath: .platform-gitops/environments/production/${{ parameters.name }}
+        values:
+          name: ${{ parameters.name }}
+          imageTag: ${{ steps.publishRepository.output.commitHash }}
+    - id: createGitOpsPullRequest
+      name: Create GitOps Pull Request
+      action: publish:github:pull-request
+      input:
+        repoUrl: github.com?owner=developer-experience-DevEX-platform&repo=platform-gitops
+        branchName: backstage/${{ parameters.name }}-gitops
+        targetBranchName: main
+        title: 'feat: add GitOps configuration for ${{ parameters.name }}'
+        description: 'Add staging and production desired-state values for ${{ parameters.name }}. Production deployment automation is not enabled.'
+        commitMessage: 'feat: add GitOps configuration for ${{ parameters.name }}'
+        sourcePath: .platform-gitops
+        createWhenEmpty: false
+        update: true
     - id: registerComponent
       name: Register Component
       action: catalog:register
@@ -90,3 +143,7 @@ spec:
         url: ${{ steps.publishRepository.output.remoteUrl }}
       - title: Open in Catalog
         entityRef: ${{ steps.registerComponent.output.entityRef }}
+      - title: Infrastructure Pull Request
+        url: ${{ steps.createInfrastructurePullRequest.output.remoteUrl }}
+      - title: GitOps Pull Request
+        url: ${{ steps.createGitOpsPullRequest.output.remoteUrl }}

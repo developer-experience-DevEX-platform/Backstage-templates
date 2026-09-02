@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -11,6 +12,7 @@ permissions:
 
 jobs:
   release:
+    if: ${{ vars.AWS_REGION != '' && vars.AWS_RELEASE_ROLE_ARN != '' && vars.ECR_REPOSITORY != '' }}
     permissions:
       contents: read
       id-token: write

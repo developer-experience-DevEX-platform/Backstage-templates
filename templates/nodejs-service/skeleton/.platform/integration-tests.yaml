@@ -1,0 +1,19 @@
+# Integration-test secret mappings.
+#
+# Secrets are created and approved outside this repository. This file only
+# maps approved AWS Secrets Manager secrets to environment variables used by
+# integration tests.
+#
+# Example:
+#
+# secrets:
+#   - env: STRIPE_TEST_KEY
+#     secret: stripe
+#     json_key: api_key
+#
+# `secret` must be a logical name only. For a service named `payments-api`,
+# `secret: stripe` resolves to `payments-api/integration/stripe`.
+#
+# Do not put secret values, ARNs, or secret paths in this file.
+
+secrets: []

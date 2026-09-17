@@ -1,5 +1,7 @@
 image:
   repository: 980829302319.dkr.ecr.eu-west-2.amazonaws.com/${{ values.name }}
+  # Set by the production promotion workflow. Production is not deployed until
+  # someone promotes a SHA that staging is already running.
   tag: ''
   pullPolicy: IfNotPresent
 

@@ -1,5 +1,7 @@
 image:
   repository: 980829302319.dkr.ecr.eu-west-2.amazonaws.com/${{ values.name }}
+  # Set by the staging GitOps workflow on the first push to main. Empty until
+  # then, so nothing is deployed before an image exists.
   tag: ''
   pullPolicy: IfNotPresent
 

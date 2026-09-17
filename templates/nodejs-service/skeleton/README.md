@@ -77,3 +77,12 @@ Drop `@testcontainers/postgresql` if the database sample is gone.
 
 Smoke, performance, and regression tests against a deployed environment belong
 in CD, not here.
+
+## Deploying
+
+Merging to `main` runs CI, publishes the container image, and deploys to
+staging automatically. Nothing to run by hand.
+
+Production is manual: run the **Promote Production** workflow and give it the
+Git SHA staging is running. Promotion is rejected if staging is running
+something else, so production always runs an image staging tested.

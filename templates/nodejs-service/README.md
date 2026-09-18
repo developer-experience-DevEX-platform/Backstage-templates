@@ -6,4 +6,4 @@
 
 Each newly scaffolded service repository must be added to the organization secret's selected-repository allowlist. For the first golden-path test, a platform operator may perform this repository-selection step manually.
 
-The generated release workflow fails if `AWS_REGION`, `AWS_RELEASE_ROLE_ARN`, or `ECR_REPOSITORY` are missing. It does not skip publish. After those variables exist and the organization secret allowlist has been updated, a push to `main` publishes and writes staging GitOps.
+The generated `release` job always calls container-release. If `AWS_REGION`, `AWS_RELEASE_ROLE_ARN`, or `ECR_REPOSITORY` are missing, **Publish to ECR** fails. Do not skip that job when the variables are empty. After they exist and the organization secret allowlist has been updated, a push to `main` publishes and writes staging GitOps.

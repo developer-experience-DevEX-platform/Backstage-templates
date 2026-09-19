@@ -4,11 +4,19 @@ ${{ values.description }}
 
 Owner: ${{ values.owner }}
 
+Docs in Backstage: [docs/index.md](docs/index.md)
+
+Copy `.env.example` to `.env` for local values.
+
 Install: `npm install`
 
 Run in development: `npm run dev`
 
-Run locally with Docker Compose: `docker compose up --build`
+Local Postgres: `docker compose up postgres`
+
+Run the app image and Postgres: `docker compose up --build`
+
+Same checks as CI: `npm run verify`
 
 Unit tests: `npm test`
 

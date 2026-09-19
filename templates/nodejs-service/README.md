@@ -1,4 +1,4 @@
-# Node.js Golden Path
+# Node.js REST API (Kubernetes)
 
 ## Platform prerequisites
 

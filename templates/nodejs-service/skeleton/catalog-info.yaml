@@ -3,6 +3,19 @@ kind: Component
 metadata:
   name: ${{ values.name }}
   description: ${{ values.description }}
+  annotations:
+    github.com/project-slug: developer-experience-DevEX-platform/${{ values.name }}
+    backstage.io/techdocs-ref: dir:.
+    backstage.io/source-location: url:https://github.com/developer-experience-DevEX-platform/${{ values.name }}/
+  links:
+    - title: Repository
+      url: https://github.com/developer-experience-DevEX-platform/${{ values.name }}
+    - title: Staging GitOps
+      url: https://github.com/developer-experience-DevEX-platform/platform-gitops/tree/main/environments/staging/${{ values.name }}
+    - title: Production GitOps
+      url: https://github.com/developer-experience-DevEX-platform/platform-gitops/tree/main/environments/production/${{ values.name }}
+    - title: Infrastructure stack
+      url: https://github.com/developer-experience-DevEX-platform/platform-infrastructure/tree/main/services/${{ values.name }}
 spec:
   type: service
   lifecycle: experimental

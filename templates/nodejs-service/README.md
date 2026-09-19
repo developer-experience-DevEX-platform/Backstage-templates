@@ -1,4 +1,4 @@
-# Node.js Golden Path
+# Node.js REST API (Kubernetes)
 
 ## Platform prerequisites
 
@@ -6,4 +6,4 @@
 
 Each newly scaffolded service repository must be added to the organization secret's selected-repository allowlist. For the first golden-path test, a platform operator may perform this repository-selection step manually.
 
-The generated release workflow skips cleanly until Terraform has populated `AWS_REGION`, `AWS_RELEASE_ROLE_ARN`, and `ECR_REPOSITORY`. After the infrastructure PR has been applied and the organization secret allowlist has been updated, a platform operator can start the first release through `workflow_dispatch` or a subsequent push to `main`.
+The generated `release` job always calls container-release. If `AWS_REGION`, `AWS_RELEASE_ROLE_ARN`, or `ECR_REPOSITORY` are missing, **Publish to ECR** fails. Do not skip that job when the variables are empty. After they exist and the organization secret allowlist has been updated, a push to `main` publishes and writes staging GitOps.

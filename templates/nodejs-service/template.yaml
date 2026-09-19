@@ -1,9 +1,9 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: nodejs-service
-  title: Node.js REST API
-  description: Creates a Node.js REST API using the company's golden path.
+  name: nodejs-rest-api-kubernetes
+  title: Node.js REST API (Kubernetes)
+  description: Creates a Node.js REST API on the Kubernetes golden path.
 spec:
   owner: platform-engineering
   type: service
@@ -15,16 +15,15 @@ spec:
         - name
         - description
         - owner
-        - deploymentTarget
       properties:
         name:
           title: Service Name
           type: string
           description: The unique name used to identify this service.
-          maxLength: 63
+          maxLength: 52
           pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
           ui:autofocus: true
-          ui:help: Names must use lowercase kebab-case, for example `payments-api`.
+          ui:help: Lowercase kebab-case, at most 52 characters, for example `payments-api`. Must fit `{name}-production` in Kubernetes.
         description:
           title: Description
           type: string
@@ -43,15 +42,6 @@ spec:
                 - Group
                 - User
             allowArbitraryValues: false
-        deploymentTarget:
-          title: Deployment Target
-          type: string
-          description: The platform runtime target for this service.
-          default: kubernetes
-          enum:
-            - kubernetes
-          enumNames:
-            - Kubernetes
   steps:
     - id: fetchBase
       name: Generate Node.js Service

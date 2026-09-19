@@ -75,11 +75,11 @@ Create a bucket, put an object, get it back. Create a queue, send a message,
 receive it. Point the service at `AWS_ENDPOINT_URL` from the container;
 production leaves that unset so the AWS SDK talks to real AWS.
 
-| This service needs | What to do |
-| --- | --- |
-| Only Postgres | Keep the sample. Change the table and queries to match the schema. |
-| S3 and SQS, no database | Replace `postgres.test.ts` with a LocalStack test. |
-| Postgres, S3, and SQS | Keep both files. Testcontainers starts both containers. |
+| This service needs      | What to do                                                         |
+| ----------------------- | ------------------------------------------------------------------ |
+| Only Postgres           | Keep the sample. Change the table and queries to match the schema. |
+| S3 and SQS, no database | Replace `postgres.test.ts` with a LocalStack test.                 |
+| Postgres, S3, and SQS   | Keep both files. Testcontainers starts both containers.            |
 
 Drop `@testcontainers/postgresql` if the database sample is gone.
 

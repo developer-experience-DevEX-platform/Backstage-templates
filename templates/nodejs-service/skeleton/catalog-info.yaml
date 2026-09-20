@@ -6,7 +6,7 @@ metadata:
   annotations:
     github.com/project-slug: developer-experience-DevEX-platform/${{ values.name }}
     backstage.io/techdocs-ref: dir:.
-    backstage.io/source-location: url:https://github.com/developer-experience-DevEX-platform/${{ values.name }}/
+    backstage.io/source-location: url:https://github.com/developer-experience-DevEX-platform/${{ values.name }}/tree/main/
   links:
     - title: Repository
       url: https://github.com/developer-experience-DevEX-platform/${{ values.name }}

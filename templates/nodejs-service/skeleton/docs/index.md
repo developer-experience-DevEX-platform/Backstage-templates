@@ -11,12 +11,10 @@ repository README.
 
 Copy `.env.example` to `.env`. A pre-commit hook rejects `.env` files; `.env.example` is allowed.
 
-| Name               | Local default                           | Notes                                                                                    |
-| ------------------ | --------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `PORT`             | `3000`                                  | Same port the process listens on in Compose.                                             |
-| `NODE_ENV`         | `development`                           | Production image sets `production`.                                                      |
-| `DATABASE_URL`     | `postgres://app:app@localhost:5432/app` | Host-side URL. Compose sets `postgres://app:app@postgres:5432/app` in the app container. |
-| `AWS_ENDPOINT_URL` | unset                                   | Set only for LocalStack. Leave unset in production.                                      |
+- `PORT` (`3000`): same port the process listens on in Compose.
+- `NODE_ENV` (`development`): production image sets `production`.
+- `DATABASE_URL` (`postgres://app:app@localhost:5432/app`): host-side URL. Compose sets `postgres://app:app@postgres:5432/app` in the app container.
+- `AWS_ENDPOINT_URL` (unset): set only for LocalStack. Leave unset in production.
 
 `npm run dev` and Compose use these names. The process already defaults `PORT` to `3000` if `.env` is missing.
 
@@ -52,9 +50,7 @@ npm run test:integration
 
 ## Platform
 
-| What                 | Where                                                                                                                       |
-| -------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| Service repository   | https://github.com/developer-experience-DevEX-platform/${{ values.name }}                                                   |
-| Staging GitOps       | https://github.com/developer-experience-DevEX-platform/platform-gitops/tree/main/environments/staging/${{ values.name }}    |
-| Production GitOps    | https://github.com/developer-experience-DevEX-platform/platform-gitops/tree/main/environments/production/${{ values.name }} |
-| Infrastructure stack | https://github.com/developer-experience-DevEX-platform/platform-infrastructure/tree/main/services/${{ values.name }}        |
+- Service repository: https://github.com/developer-experience-DevEX-platform/${{ values.name }}
+- Staging GitOps: https://github.com/developer-experience-DevEX-platform/platform-gitops/tree/main/environments/staging/${{ values.name }}
+- Production GitOps: https://github.com/developer-experience-DevEX-platform/platform-gitops/tree/main/environments/production/${{ values.name }}
+- Infrastructure stack: https://github.com/developer-experience-DevEX-platform/platform-infrastructure/tree/main/services/${{ values.name }}

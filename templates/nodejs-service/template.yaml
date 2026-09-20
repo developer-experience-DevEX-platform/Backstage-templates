@@ -119,6 +119,7 @@ spec:
       input:
         repoContentsUrl: ${{ steps.publishRepository.output.repoContentsUrl }}
         catalogInfoPath: /catalog-info.yaml
+        optional: true
     - id: cleanupRepository
       name: Roll back repository
       if: ${{ failure() }}

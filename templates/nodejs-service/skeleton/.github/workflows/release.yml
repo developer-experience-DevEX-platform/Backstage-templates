@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -20,6 +21,7 @@ jobs:
 
   release:
     needs: ci
+    if: vars.ECR_REPOSITORY != ''
     permissions:
       contents: read
       id-token: write
@@ -28,6 +30,7 @@ jobs:
   deploy-staging:
     name: Deploy to staging
     needs: release
+    if: vars.ECR_REPOSITORY != ''
     permissions:
       contents: read
     uses: developer-experience-DevEX-platform/ci-cd-templates/.github/workflows/kubernetes-gitops-cd.yml@v1.0.0

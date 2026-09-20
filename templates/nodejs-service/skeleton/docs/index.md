@@ -48,6 +48,9 @@ npm test
 npm run test:integration
 ```
 
+The first GitHub Release run after scaffold only proves CI. Publish waits until
+`ECR_REPOSITORY` exists. Then use **Actions → Release → Run workflow**.
+
 ## Platform
 
 - Service repository: https://github.com/developer-experience-DevEX-platform/${{ values.name }}

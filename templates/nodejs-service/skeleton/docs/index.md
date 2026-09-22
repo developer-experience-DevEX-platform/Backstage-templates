@@ -5,7 +5,8 @@ ${{ values.description }}
 Owner: `${{ values.owner }}`
 
 This page is the TechDocs home for the service. GitHub still uses the
-repository README.
+repository README. Add any other page as a `.md` file under `docs/`;
+MkDocs includes it automatically. Keep `index.md` as the homepage.
 
 ## Local environment
 

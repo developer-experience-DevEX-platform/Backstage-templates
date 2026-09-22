@@ -49,8 +49,9 @@ npm test
 npm run test:integration
 ```
 
-The first GitHub Release run after scaffold only proves CI. Publish waits until
-`ECR_REPOSITORY` exists. Then use **Actions → Release → Run workflow**.
+The first GitHub Release run after scaffold only proves CI. Image publish
+waits until `ECR_REPOSITORY` exists. Docs publish waits until
+`TECHDOCS_S3_BUCKET` exists. Then use **Actions → Release → Run workflow**.
 
 ## Platform
 

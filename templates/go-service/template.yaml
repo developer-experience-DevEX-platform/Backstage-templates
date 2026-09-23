@@ -1,0 +1,138 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: go-rest-api-kubernetes
+  title: Go REST API (Kubernetes)
+  description: Creates a Go REST API on the Kubernetes golden path.
+spec:
+  owner: platform-engineering
+  type: service
+  EXPERIMENTAL_recovery:
+    EXPERIMENTAL_strategy: startOver
+  parameters:
+    - title: Service Information
+      required:
+        - name
+        - description
+        - owner
+      properties:
+        name:
+          title: Service Name
+          type: string
+          description: The unique name used to identify this service.
+          maxLength: 52
+          pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+          ui:autofocus: true
+          ui:help: Lowercase kebab-case, at most 52 characters, for example `payments-api`. Must fit `{name}-production` in Kubernetes.
+        description:
+          title: Description
+          type: string
+          description: Briefly describe what the service does.
+          ui:widget: textarea
+          ui:options:
+            rows: 4
+        owner:
+          title: Owner
+          type: string
+          description: The team or individual responsible for this service
+          ui:field: OwnerPicker
+          ui:options:
+            catalogFilter:
+              kind:
+                - Group
+                - User
+            allowArbitraryValues: false
+  steps:
+    - id: fetchBase
+      name: Generate Go Service
+      action: fetch:template
+      input:
+        url: ./skeleton
+        copyWithoutTemplating:
+          - .github/workflows/**
+        values:
+          name: ${{ parameters.name }}
+          description: ${{ parameters.description }}
+          owner: ${{ parameters.owner }}
+    - id: publishRepository
+      name: Publish Repository
+      action: publish:github
+      input:
+        repoUrl: github.com?owner=developer-experience-DevEX-platform&repo=${{ parameters.name }}
+        description: ${{ parameters.description }}
+        defaultBranch: main
+        repoVisibility: public
+    - id: fetchInfrastructureDefinition
+      name: Prepare Container Release Infrastructure
+      action: fetch:template
+      input:
+        url: ./platform-infrastructure
+        targetPath: .platform-infrastructure
+        values:
+          name: ${{ parameters.name }}
+    - id: createInfrastructurePullRequest
+      name: Create Infrastructure Pull Request
+      action: publish:github:pull-request
+      input:
+        repoUrl: github.com?owner=developer-experience-DevEX-platform&repo=platform-infrastructure
+        branchName: backstage/${{ parameters.name }}-container-release
+        targetBranchName: main
+        title: 'feat: provision container release for ${{ parameters.name }}'
+        description: 'Provision the ECR repository, GitHub OIDC release identity, and repository configuration for ${{ parameters.name }}.'
+        commitMessage: 'feat: provision container release for ${{ parameters.name }}'
+        sourcePath: .platform-infrastructure
+        targetPath: services/${{ parameters.name }}
+        createWhenEmpty: false
+        update: true
+    - id: fetchStagingGitOpsDefinition
+      name: Prepare Staging GitOps Configuration
+      action: fetch:template
+      input:
+        url: ./gitops/staging
+        targetPath: .platform-gitops/environments/staging/${{ parameters.name }}
+        values:
+          name: ${{ parameters.name }}
+    - id: fetchProductionGitOpsDefinition
+      name: Prepare Production GitOps Configuration
+      action: fetch:template
+      input:
+        url: ./gitops/production
+        targetPath: .platform-gitops/environments/production/${{ parameters.name }}
+        values:
+          name: ${{ parameters.name }}
+    - id: createGitOpsPullRequest
+      name: Create GitOps Pull Request
+      action: publish:github:pull-request
+      input:
+        repoUrl: github.com?owner=developer-experience-DevEX-platform&repo=platform-gitops
+        branchName: backstage/${{ parameters.name }}-gitops
+        targetBranchName: main
+        title: 'feat: add GitOps configuration for ${{ parameters.name }}'
+        description: 'Add staging and production desired-state values for ${{ parameters.name }}. Production deployment automation is not enabled.'
+        commitMessage: 'feat: add GitOps configuration for ${{ parameters.name }}'
+        sourcePath: .platform-gitops
+        createWhenEmpty: false
+        update: true
+    - id: registerComponent
+      name: Register Component
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps.publishRepository.output.repoContentsUrl }}
+        catalogInfoPath: /catalog-info.yaml
+        optional: true
+    - id: cleanupRepository
+      name: Roll back repository
+      if: ${{ failure() }}
+      action: devex:github:repo:delete
+      input:
+        repoUrl: github.com?owner=developer-experience-DevEX-platform&repo=${{ parameters.name }}
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps.publishRepository.output.remoteUrl }}
+      - title: Open in Catalog
+        entityRef: ${{ steps.registerComponent.output.entityRef }}
+      - title: Infrastructure Pull Request
+        url: ${{ steps.createInfrastructurePullRequest.output.remoteUrl }}
+      - title: GitOps Pull Request
+        url: ${{ steps.createGitOpsPullRequest.output.remoteUrl }}

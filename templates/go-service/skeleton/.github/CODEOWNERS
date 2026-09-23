@@ -1,0 +1,2 @@
+# Backstage owner: ${{ values.owner }}
+* ${{ values.owner | replace("group:default/", "@developer-experience-DevEX-platform/") | replace("user:default/", "@") }}

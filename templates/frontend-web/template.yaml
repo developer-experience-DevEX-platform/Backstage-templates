@@ -1,0 +1,107 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: react-vite-website
+  title: React Website (S3 + CloudFront)
+  description: Creates a React + Vite website on the static-site golden path.
+spec:
+  owner: platform-engineering
+  type: website
+  EXPERIMENTAL_recovery:
+    EXPERIMENTAL_strategy: startOver
+  parameters:
+    - title: Website Information
+      required:
+        - name
+        - description
+        - owner
+      properties:
+        name:
+          title: Website Name
+          type: string
+          description: The unique name used to identify this website.
+          maxLength: 45
+          pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+          ui:autofocus: true
+          ui:help: Lowercase kebab-case, at most 45 characters, for example `billing-ui`. Must fit the site bucket name.
+        description:
+          title: Description
+          type: string
+          description: Briefly describe what the website does.
+          ui:widget: textarea
+          ui:options:
+            rows: 4
+        owner:
+          title: Owner
+          type: string
+          description: The team or individual responsible for this website
+          ui:field: OwnerPicker
+          ui:options:
+            catalogFilter:
+              kind:
+                - Group
+                - User
+            allowArbitraryValues: false
+  steps:
+    - id: fetchBase
+      name: Generate React Website
+      action: fetch:template
+      input:
+        url: ./skeleton
+        copyWithoutTemplating:
+          - .github/workflows/**
+        values:
+          name: ${{ parameters.name }}
+          description: ${{ parameters.description }}
+          owner: ${{ parameters.owner }}
+    - id: publishRepository
+      name: Publish Repository
+      action: publish:github
+      input:
+        repoUrl: github.com?owner=developer-experience-DevEX-platform&repo=${{ parameters.name }}
+        description: ${{ parameters.description }}
+        defaultBranch: main
+        repoVisibility: public
+    - id: fetchInfrastructureDefinition
+      name: Prepare Static Site Infrastructure
+      action: fetch:template
+      input:
+        url: ./platform-infrastructure
+        targetPath: .platform-infrastructure
+        values:
+          name: ${{ parameters.name }}
+    - id: createInfrastructurePullRequest
+      name: Create Infrastructure Pull Request
+      action: publish:github:pull-request
+      input:
+        repoUrl: github.com?owner=developer-experience-DevEX-platform&repo=platform-infrastructure
+        branchName: backstage/${{ parameters.name }}-static-site-release
+        targetBranchName: main
+        title: 'feat: provision static site release for ${{ parameters.name }}'
+        description: 'Provision the S3 bucket, CloudFront distribution, GitHub OIDC release identity, and repository configuration for ${{ parameters.name }}.'
+        commitMessage: 'feat: provision static site release for ${{ parameters.name }}'
+        sourcePath: .platform-infrastructure
+        targetPath: services/${{ parameters.name }}
+        createWhenEmpty: false
+        update: true
+    - id: registerComponent
+      name: Register Component
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps.publishRepository.output.repoContentsUrl }}
+        catalogInfoPath: /catalog-info.yaml
+        optional: true
+    - id: cleanupRepository
+      name: Roll back repository
+      if: ${{ failure() }}
+      action: devex:github:repo:delete
+      input:
+        repoUrl: github.com?owner=developer-experience-DevEX-platform&repo=${{ parameters.name }}
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps.publishRepository.output.remoteUrl }}
+      - title: Open in Catalog
+        entityRef: ${{ steps.registerComponent.output.entityRef }}
+      - title: Infrastructure Pull Request
+        url: ${{ steps.createInfrastructurePullRequest.output.remoteUrl }}
